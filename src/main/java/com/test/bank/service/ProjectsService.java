@@ -5,6 +5,8 @@ import com.test.bank.repository.ProjectsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ProjectsService {
 
@@ -17,5 +19,13 @@ public class ProjectsService {
 
     public Iterable<Project> getAllProjects() {
         return projectsRepository.findAll();
+    }
+
+    public Optional<Project> findProjectById(Long id) {
+        return projectsRepository.findById(id);
+    }
+
+    public void deleteProjectById(Long id) {
+        projectsRepository.deleteById(id);
     }
 }
