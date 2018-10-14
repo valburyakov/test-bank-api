@@ -33,6 +33,6 @@ public class ProjectsControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(IntegrationTestUtils.toJson(project)))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Demo")));
+                .andExpect(content().string(containsString("{\"id\":1}")));
     }
 }

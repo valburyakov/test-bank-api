@@ -1,22 +1,29 @@
 package com.test.bank.web;
 
 import com.test.bank.model.Project;
+import com.test.bank.service.ProjectsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 
 @RestController
 public class ProjectsController {
 
+    @Autowired
+    private ProjectsService projectsService;
+
     @RequestMapping(value = "/projects/add", method = RequestMethod.POST)
-    public Project createProject(@RequestBody Project project) {
-        project.setId(1);
-        return project;
+    public Map<String, Long> createProject(@RequestBody Project project) {
+        long id = projectsService.add(project);
+        return Collections.singletonMap("id", id);
     }
 
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
