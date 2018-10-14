@@ -28,10 +28,7 @@ public class ProjectsController {
 
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
     public List<Project> getAllProjects() {
-        Project project = new Project();
-        project.setId(2);
-        project.setName("Test project");
-        return asList(project);
+        return projectsService.getAllProjects();
     }
 
 
