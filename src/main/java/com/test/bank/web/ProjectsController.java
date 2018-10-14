@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
-
 @RestController
 public class ProjectsController {
 
@@ -22,14 +20,11 @@ public class ProjectsController {
 
     @RequestMapping(value = "/projects/add", method = RequestMethod.POST)
     public Map<String, Long> createProject(@RequestBody Project project) {
-        long id = projectsService.add(project);
-        return Collections.singletonMap("id", id);
+        return Collections.singletonMap("id", projectsService.add(project));
     }
 
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
-    public List<Project> getAllProjects() {
-        return projectsService.getAllProjects();
+    public Map<String, List<Project>> getAllProjects() {
+        return Collections.singletonMap("projects", projectsService.getAllProjects());
     }
-
-
 }
