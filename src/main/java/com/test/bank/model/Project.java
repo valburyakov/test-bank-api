@@ -1,6 +1,5 @@
 package com.test.bank.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +20,5 @@ public class Project {
     @ApiModelProperty(hidden = true)
     Long id;
     String name;
+    boolean deleted;
 }
