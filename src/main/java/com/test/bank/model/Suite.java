@@ -1,5 +1,6 @@
 package com.test.bank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,9 +14,14 @@ import javax.persistence.Id;
 @Setter
 @Entity
 @NoArgsConstructor
-public class Project {
+public class Suite {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
+    Long id;
+
+    @JsonIgnore
+    Long projectId;
+
     String name;
 }
