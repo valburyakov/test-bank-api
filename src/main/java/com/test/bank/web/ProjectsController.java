@@ -11,6 +11,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.singletonMap;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 public class ProjectsController {
 
@@ -19,29 +23,31 @@ public class ProjectsController {
 
     @RequestMapping(value = "/projects", method = RequestMethod.POST)
     public Map<String, Long> createProject(@RequestBody Project project) {
-        return Collections.singletonMap("id", projectsService.add(project));
+        return singletonMap("id", projectsService.add(project));
     }
 
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
     public Map<String, Iterable<Project>> getAllProjects() {
-        return Collections.singletonMap("projects", projectsService.getAllProjects());
+        return singletonMap("projects", projectsService.getAllProjects());
     }
 
     @RequestMapping(value = "/projects/{id}", method = RequestMethod.GET)
-    public Optional<Project> getProjectById(@PathVariable Long id) {
-        return projectsService.findProjectById(id);
+    public ResponseEntity getProjectById(@PathVariable Long id) {
+        Optional<Project> value = projectsService.findProjectById(id);
+        return value.<ResponseEntity>map(project -> new ResponseEntity<>(project, OK))
+                .orElseGet(() -> new ResponseEntity<>(singletonMap("status", "No such project with id " + id), NOT_FOUND));
     }
 
     @RequestMapping(value = "/projects/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProjectById(@PathVariable Long id) {
         Optional<Project> value = projectsService.findProjectById(id);
         if (!value.isPresent()) {
-            return new ResponseEntity<>(Collections.singletonMap("status", "No such project with id " + id), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(singletonMap("status", "No such project with id " + id), NOT_FOUND);
         }
 
         Project project = value.get();
         project.setDeleted(true);
         projectsService.add(project);
-        return new ResponseEntity<>(Collections.singletonMap("status", "Deleted"), HttpStatus.OK);
+        return new ResponseEntity<>(singletonMap("status", "Deleted"), OK);
     }
 }

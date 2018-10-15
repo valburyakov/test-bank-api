@@ -24,11 +24,11 @@ public class SuitesController {
         return Collections.singletonMap("id", suitesService.add(projectId, suite).getId());
     }
 
-    @RequestMapping(value = "/projects/suites/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity getSuiteById(@PathVariable Long id) {
-        Optional<Suite> value = suitesService.findSuiteById(id);
+    @RequestMapping(value = "/projects/suites/{suiteId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity getSuiteById(@PathVariable Long suiteId) {
+        Optional<Suite> value = suitesService.findSuiteById(suiteId);
         if (!value.isPresent()) {
-            return new ResponseEntity<>(Collections.singletonMap("status", "No such project with id " + id), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Collections.singletonMap("status", "No such project with id " + suiteId), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(value.get(), HttpStatus.OK);
     }
