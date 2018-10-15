@@ -34,8 +34,8 @@ public class SuitesController {
     }
 
     @RequestMapping(value = "/projects/{projectId}/suites", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<Suite> getSuitesByPorjectId(@PathVariable Long projectId) {
-        return suitesService.findActiveSuitesByProjectId(projectId);
+    public List<Suite> getSuitesByProjectId(@PathVariable Long projectId, Boolean deleted) {
+        return suitesService.findActiveSuitesByProjectId(projectId, deleted);
     }
 
     @RequestMapping(value = "/projects/suites/{suiteId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

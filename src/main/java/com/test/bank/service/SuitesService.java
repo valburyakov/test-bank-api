@@ -27,8 +27,8 @@ public class SuitesService {
         return suitesRepository.findSuitesByProjectId(projectId);
     }
 
-    public List<Suite> findActiveSuitesByProjectId(Long projectId) {
-        return suitesRepository.findActiveSuitesByProjectId(projectId, false);
+    public List<Suite> findActiveSuitesByProjectId(Long projectId, boolean deleted) {
+        return suitesRepository.findActiveSuitesByProjectId(projectId, deleted);
     }
 
     public void deleteSuite(Suite suite) {
