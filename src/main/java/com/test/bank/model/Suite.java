@@ -1,6 +1,7 @@
 package com.test.bank.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,10 +19,10 @@ public class Suite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @ApiModelProperty(hidden = true)
     Long id;
-
-    @JsonIgnore
+    @ApiModelProperty(hidden = true)
     Long projectId;
-
     String name;
+    boolean deleted;
 }
