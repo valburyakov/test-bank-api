@@ -13,8 +13,8 @@ public class ProjectsService {
     @Autowired
     private ProjectsRepository projectsRepository;
 
-    public Project add(Project project) {
-        return projectsRepository.save(project);
+    public Long add(Project project) {
+        return projectsRepository.save(project).getId();
     }
 
     public Iterable<Project> getAllProjects() {

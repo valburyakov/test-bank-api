@@ -19,7 +19,7 @@ public class ProjectsController {
 
     @RequestMapping(value = "/projects", method = RequestMethod.POST)
     public Map<String, Long> createProject(@RequestBody Project project) {
-        return Collections.singletonMap("id", projectsService.add(project).getId());
+        return Collections.singletonMap("id", projectsService.add(project));
     }
 
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
