@@ -93,15 +93,15 @@ public class TestCasesController {
             return suiteIdNotFoundResponse(suiteId);
         }
 
-        Optional<TestCase> testCase = testCasesService.findTestCaseById(id);
-        if (!testCase.isPresent()) {
+        Optional<TestCase> value = testCasesService.findTestCaseById(id);
+        if (!value.isPresent()) {
             return testCaseNotFoundResponse(id);
         }
 
-        TestCase test = testCase.get();
-        test.setDeleted(true);
+        TestCase testCase = value.get();
+        testCase.setDeleted(true);
 
-        testCasesService.updateTestCase(test);
+        testCasesService.updateTestCase(testCase);
         return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, DELETED_STATUS), HttpStatus.OK);
     }
 
