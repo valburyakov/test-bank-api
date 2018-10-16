@@ -3,11 +3,9 @@ package com.test.bank.web;
 import com.test.bank.model.Project;
 import com.test.bank.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,9 +24,10 @@ public class ProjectsController {
         return singletonMap("id", projectsService.add(project));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
-    public Map<String, Iterable<Project>> getAllProjects() {
-        return singletonMap("projects", projectsService.getAllProjects());
+    public Iterable<Project> getAllProjects() {
+        return projectsService.getAllProjects();
     }
 
     @RequestMapping(value = "/projects/{id}", method = RequestMethod.GET)
