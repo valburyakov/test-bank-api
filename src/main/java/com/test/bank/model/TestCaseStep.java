@@ -21,5 +21,6 @@ public class TestCaseStep {
     long id;
     @ApiModelProperty(hidden = true)
     long testCaseId;
+    @ApiModelProperty(example = "Click button")
     String step;
 }

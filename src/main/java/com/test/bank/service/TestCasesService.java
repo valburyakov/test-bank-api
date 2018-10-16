@@ -13,9 +13,9 @@ public class TestCasesService {
     @Autowired
     private TestCaseRepository testCaseRepository;
 
-    public TestCase add(Long suiteId, TestCase testCase) {
+    public Long add(Long suiteId, TestCase testCase) {
         testCase.setSuiteId(suiteId);
-        return testCaseRepository.save(testCase);
+        return testCaseRepository.save(testCase).getId();
     }
 
     public Iterable<TestCase> findActiveTestCasesBySuiteId(Long suiteId, boolean deleted) {
