@@ -19,6 +19,7 @@ public class ProjectsController {
     @Autowired
     private ProjectsService projectsService;
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "/projects", method = RequestMethod.POST)
     public Map<String, Long> createProject(@RequestBody Project project) {
         return singletonMap("id", projectsService.add(project));
