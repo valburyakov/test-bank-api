@@ -1,0 +1,40 @@
+sudo: true
+
+language: java
+
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+git:
+  depth: 99999
+
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+
+services:
+- docker
+- mysql
+
+addons:
+  apt:
+    sources:
+    - mysql-5.7-trusty
+    packages:
+    - mysql-server
+
+before_install:
+- sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('admin') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+- sudo mysql_upgrade -u root -padmin
+- sudo service mysql restart
+- mysql -u root -padmin -e 'CREATE DATABASE IF NOT EXISTS test_bank;'
+
+install: true
+
+jobs:
+  include:
+  - stage: executing tests
+    script:
+    - ./gradlew clean test
