@@ -18,9 +18,9 @@ public class TestCaseStep {
     @Id
     @ApiModelProperty(hidden = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
+    Long id;
     @ApiModelProperty(hidden = true)
-    long testCaseId;
+    Long testCaseId;
     @ApiModelProperty(example = "Click button")
     String step;
 }

@@ -5,6 +5,7 @@ import com.test.bank.repository.TestCaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,15 @@ public class TestCasesService {
 
     public Iterable<TestCase> findActiveTestCasesBySuiteId(Long suiteId, boolean deleted) {
         return testCaseRepository.findAllActiveTestCasesBySuiteId(suiteId, deleted);
+    }
+
+    public Iterable<TestCase> findByLabel(List<String> labels) {
+        List<Long> ids = testCaseRepository.findTestCaseIdsByLabel(labels);
+        return findAllActiveTestCasesByIds(ids, false);
+    }
+
+    public Iterable<TestCase> findAllActiveTestCasesByIds(List<Long> ids,  boolean deleted) {
+        return testCaseRepository.findAllActiveTestCasesByIds(ids, deleted);
     }
 
     public Optional<TestCase> findTestCaseById(Long id) {

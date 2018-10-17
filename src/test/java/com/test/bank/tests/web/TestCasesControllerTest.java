@@ -17,9 +17,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -102,10 +106,10 @@ public class TestCasesControllerTest {
         testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
         when(testCasesService.findTestCaseById(1L)).thenReturn(Optional.of(testCase));
 
-        this.mockMvc.perform(get("/projects/{projectId}/suites/{suiteId}/cases/{caseId}", 1, 1, 1)
+        this.mockMvc.perform(get("/projects/{projectId}/cases/{caseId}", 1, 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"case\":{\"id\":1,\"suiteId\":0,\"name\":\"Test case\",\"description\":null,\"steps\":null,\"status\":\"NOT_TESTED\",\"deleted\":false}}"));
+                .andExpect(content().json("{\"case\":{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[],\"status\":\"NOT_TESTED\",\"deleted\":false}}"));
     }
 
     @Test
@@ -122,7 +126,7 @@ public class TestCasesControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json(
-                        "{\"cases\":[{\"id\":1,\"suiteId\":0,\"name\":\"Test case\",\"description\":null,\"steps\":null,\"status\":\"NOT_TESTED\",\"deleted\":false}]}"));
+                        "{\"cases\":[{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[],\"status\":\"NOT_TESTED\",\"deleted\":false}]}"));
     }
 
     @Test
@@ -134,7 +138,7 @@ public class TestCasesControllerTest {
         when(testCasesService.findTestCaseById(1L)).thenReturn(Optional.of(testCase));
 
 
-        this.mockMvc.perform(delete("/projects/{projectId}/suites/{suiteId}/cases/{id}", 1, 1, 1)
+        this.mockMvc.perform(delete("/projects/{projectId}/cases/{id}", 1, 1, 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json(
@@ -183,10 +187,28 @@ public class TestCasesControllerTest {
         testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
         when(testCasesService.findTestCaseById(1L)).thenReturn(Optional.of(testCase));
 
-        this.mockMvc.perform(get("/projects/{projectId}/suites/{suiteId}/cases/{id}", 1, 1, 2)
+        this.mockMvc.perform(get("/projects/{projectId}/cases/{id}", 1, 2)
                 .param("deleted", "false")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isNotFound())
                 .andExpect(content().json("{\"status\":\"No such test case with id 2\"}"));
+    }
+
+    @Test
+    public void testCanGetAllTestCaseByLabels() throws Exception {
+        List<String> labels = Arrays.asList("smoke", "api");
+        TestCase testCase = new TestCase();
+        testCase.setId(1L);
+        testCase.setName("Test case");
+        testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
+        testCase.setLabels(labels);
+        when(testCasesService.findByLabel(labels)).thenReturn(Collections.singletonList(testCase));
+
+        this.mockMvc.perform(get("/projects/{projectId}/cases/labels", 1)
+                .param("label", "smoke", "api")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(content().json(
+                        "{\"cases\":[{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[\"smoke\",\"api\"],\"status\":\"NOT_TESTED\",\"deleted\":false}]}"));
     }
 }
