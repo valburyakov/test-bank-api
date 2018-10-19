@@ -1,7 +1,7 @@
 package com.test.bank.tests.web;
 
 
-import com.test.bank.LaunchStatus;
+import com.test.bank.enums.LaunchStatus;
 import com.test.bank.model.Launch;
 import com.test.bank.model.Project;
 import com.test.bank.service.LaunchesService;

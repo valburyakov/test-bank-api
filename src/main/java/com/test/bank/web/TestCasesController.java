@@ -1,7 +1,7 @@
 package com.test.bank.web;
 
 import com.google.common.base.Enums;
-import com.test.bank.TestCaseStatus;
+import com.test.bank.enums.TestCaseStatus;
 import com.test.bank.model.Suite;
 import com.test.bank.model.TestCase;
 import com.test.bank.service.ProjectsService;

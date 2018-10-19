@@ -1,4 +1,4 @@
-package com.test.bank;
+package com.test.bank.enums;
 
 public enum LaunchStatus {
 

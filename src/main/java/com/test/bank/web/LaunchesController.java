@@ -3,7 +3,7 @@ package com.test.bank.web;
 
 import com.google.common.base.Enums;
 import com.test.bank.ControllerKeyConstants;
-import com.test.bank.LaunchStatus;
+import com.test.bank.enums.LaunchStatus;
 import com.test.bank.model.Launch;
 import com.test.bank.service.LaunchesService;
 import com.test.bank.service.ProjectsService;

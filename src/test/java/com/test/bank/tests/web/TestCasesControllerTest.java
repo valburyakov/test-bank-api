@@ -1,10 +1,9 @@
 package com.test.bank.tests.web;
 
-import com.test.bank.TestCaseStatus;
+import com.test.bank.enums.TestCaseStatus;
 import com.test.bank.model.Project;
 import com.test.bank.model.Suite;
 import com.test.bank.model.TestCase;
-import com.test.bank.repository.TestCaseRepository;
 import com.test.bank.service.ProjectsService;
 import com.test.bank.service.SuitesService;
 import com.test.bank.service.TestCasesService;
