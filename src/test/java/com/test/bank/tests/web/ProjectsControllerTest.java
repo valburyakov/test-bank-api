@@ -72,6 +72,6 @@ public class ProjectsControllerTest {
         this.mockMvc.perform(get("/projects")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"projects\":[{\"id\":1,\"name\":\"Demo\"}]}"));
+                .andExpect(content().json("[{\"id\":1,\"name\":\"Demo\"}]"));
     }
 }
