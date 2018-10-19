@@ -14,9 +14,9 @@ public class SuitesService {
     @Autowired
     private SuitesRepository suitesRepository;
 
-    public Suite add(Long projectId, Suite suite) {
+    public Long add(Long projectId, Suite suite) {
         suite.setProjectId(projectId);
-        return suitesRepository.save(suite);
+        return suitesRepository.save(suite).getId();
     }
 
     public Optional<Suite> findSuiteById(Long id) {

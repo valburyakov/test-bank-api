@@ -2,6 +2,7 @@ package com.test.bank.web;
 
 import com.google.common.base.Enums;
 import com.test.bank.TestCaseStatus;
+import com.test.bank.model.Suite;
 import com.test.bank.model.TestCase;
 import com.test.bank.service.ProjectsService;
 import com.test.bank.service.SuitesService;
@@ -42,8 +43,12 @@ public class TestCasesController {
         if (!isProjectPresent(projectId)) {
             return projectIdNotFoundResponse(projectId);
         }
-        if (!isSuitePresent(suiteId)) {
+        Optional<Suite> value = suitesService.findSuiteById(suiteId);
+        if (!value.isPresent()) {
             return suiteIdNotFoundResponse(suiteId);
+        }
+        if (projectId.longValue() != value.get().getProjectId().longValue()) {
+            return suiteHaveWrongProjectIdResponse(suiteId);
         }
 
         return new ResponseEntity<>(Collections.singletonMap(CASES_KEY, testCasesService.findActiveTestCasesBySuiteId(suiteId, deleted)), HttpStatus.OK);
@@ -77,9 +82,15 @@ public class TestCasesController {
         if (!isProjectPresent(projectId)) {
             return projectIdNotFoundResponse(projectId);
         }
-        if (!isSuitePresent(suiteId)) {
+        Optional<Suite> value = suitesService.findSuiteById(suiteId);
+        if (!value.isPresent()) {
             return suiteIdNotFoundResponse(suiteId);
         }
+
+        if (projectId.longValue() != value.get().getProjectId().longValue()) {
+            return suiteHaveWrongProjectIdResponse(suiteId);
+        }
+
         if (!isStatusCorrect(testCase.getStatus())) {
             return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY,
                     String.format("No such status %s found for test cases, use on of %s status.",
@@ -87,6 +98,7 @@ public class TestCasesController {
                                     .map(Enum::name)
                                     .collect(Collectors.joining(", ")))), HttpStatus.BAD_REQUEST);
         }
+
 
         return new ResponseEntity<>(Collections.singletonMap(ID_KEY, testCasesService.add(suiteId, testCase)), HttpStatus.OK);
     }
@@ -114,10 +126,6 @@ public class TestCasesController {
         return projectsService.findProjectById(projectId).isPresent();
     }
 
-    private boolean isSuitePresent(Long suiteId) {
-        return suitesService.findSuiteById(suiteId).isPresent();
-    }
-
     private boolean isStatusCorrect(String status) {
         return Enums.getIfPresent(TestCaseStatus.class, status).isPresent();
     }
@@ -133,6 +141,10 @@ public class TestCasesController {
 
     private ResponseEntity testCaseNotFoundResponse(Long suiteId) {
         return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "No such test case with id " + suiteId), HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity suiteHaveWrongProjectIdResponse(Long suiteId) {
+        return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "Project does not have suite with id:  " + suiteId), HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -19,16 +19,16 @@ public class TestCasesService {
         return testCaseRepository.save(testCase).getId();
     }
 
-    public Iterable<TestCase> findActiveTestCasesBySuiteId(Long suiteId, boolean deleted) {
+    public List<TestCase> findActiveTestCasesBySuiteId(Long suiteId, boolean deleted) {
         return testCaseRepository.findAllActiveTestCasesBySuiteId(suiteId, deleted);
     }
 
-    public Iterable<TestCase> findByLabel(List<String> labels) {
+    public List<TestCase> findByLabel(List<String> labels) {
         List<Long> ids = testCaseRepository.findTestCaseIdsByLabel(labels);
         return findAllActiveTestCasesByIds(ids, false);
     }
 
-    public Iterable<TestCase> findAllActiveTestCasesByIds(List<Long> ids,  boolean deleted) {
+    public List<TestCase> findAllActiveTestCasesByIds(List<Long> ids,  boolean deleted) {
         return testCaseRepository.findAllActiveTestCasesByIds(ids, deleted);
     }
 

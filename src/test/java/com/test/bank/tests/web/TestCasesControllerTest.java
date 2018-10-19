@@ -4,6 +4,7 @@ import com.test.bank.TestCaseStatus;
 import com.test.bank.model.Project;
 import com.test.bank.model.Suite;
 import com.test.bank.model.TestCase;
+import com.test.bank.repository.TestCaseRepository;
 import com.test.bank.service.ProjectsService;
 import com.test.bank.service.SuitesService;
 import com.test.bank.service.TestCasesService;
@@ -17,14 +18,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -81,6 +77,32 @@ public class TestCasesControllerTest {
                 .content(IntegrationTestUtils.toJson(testCase)))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json("{\"id\":0}"));
+    }
+
+    @Test
+    public void testCanNotCreateTestCaseWithWrongProjectId() throws Exception {
+        Project project = new Project();
+        project.setId(1L);
+        project.setName("Demo");
+        when(projectsService.findProjectById(1L)).thenReturn(Optional.of(project));
+
+        Suite suite = new Suite();
+        suite.setId(1L);
+        suite.setProjectId(2L);
+        suite.setName("Test suite");
+        when(suitesService.findSuiteById(1L)).thenReturn(Optional.of(suite));
+
+        TestCase testCase = new TestCase();
+        testCase.setId(0L);
+        testCase.setName("Test case");
+        testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
+        when(testCasesService.add(1L, testCase)).thenReturn(0L);
+
+        this.mockMvc.perform(post("/projects/{projectId}/suites/{suiteId}/cases", 1, 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(IntegrationTestUtils.toJson(testCase)))
+                .andDo(print()).andExpect(status().isBadRequest())
+                .andExpect(content().json("{\"status\":\"Project does not have suite with id:  1\"}"));
     }
 
     @Test

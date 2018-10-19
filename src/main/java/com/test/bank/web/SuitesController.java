@@ -20,8 +20,8 @@ public class SuitesController {
     private SuitesService suitesService;
 
     @RequestMapping(value = "/projects/{projectId}/suites", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Map<String, Long> createSuite(@PathVariable("projectId") Long projectId, @RequestBody Suite suite) {
-        return Collections.singletonMap("id", suitesService.add(projectId, suite).getId());
+    public ResponseEntity createSuite(@PathVariable("projectId") Long projectId, @RequestBody Suite suite) {
+        return new ResponseEntity<>(Collections.singletonMap("id", suitesService.add(projectId, suite)),HttpStatus.OK);
     }
 
     @RequestMapping(value = "/projects/suites/{suiteId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -34,8 +34,8 @@ public class SuitesController {
     }
 
     @RequestMapping(value = "/projects/{projectId}/suites", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<Suite> getSuitesByProjectId(@PathVariable Long projectId, Boolean deleted) {
-        return suitesService.findActiveSuitesByProjectId(projectId, deleted);
+    public ResponseEntity getSuitesByProjectId(@PathVariable Long projectId, Boolean deleted) {
+        return new ResponseEntity<>(Collections.singletonMap("suites", suitesService.findActiveSuitesByProjectId(projectId, deleted)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/projects/suites/{suiteId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
