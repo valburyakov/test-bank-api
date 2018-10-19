@@ -63,6 +63,20 @@ public class SuitesControllerTest {
     }
 
     @Test
+    public void testCanNotCreateSuiteWithExistingName() throws Exception {
+        Suite suite = new Suite();
+        suite.setProjectId(1L);
+        suite.setName("Test suite");
+        when(suitesService.findSuitByName(1L, suite.getName(), false)).thenReturn(Optional.of(suite));
+
+        this.mockMvc.perform(post("/projects/{projectId}/suites", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(IntegrationTestUtils.toJson(suite)))
+                .andDo(print()).andExpect(status().isBadRequest())
+                .andExpect(content().json("{\"status\":\"Suite with name Test suite exist.\"}"));
+    }
+
+    @Test
     public void testCanGetSuiteById() throws Exception {
         Suite suite = new Suite();
         suite.setId(1L);
