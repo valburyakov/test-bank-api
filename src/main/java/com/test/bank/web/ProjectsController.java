@@ -40,14 +40,11 @@ public class ProjectsController {
 
     @RequestMapping(value = "/projects/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProjectById(@PathVariable Long id) {
-        Optional<Project> value = projectsService.findProjectById(id);
-        if (!value.isPresent()) {
+        boolean deleted = projectsService.deleteProject(id);
+        if (!deleted) {
             return new ResponseEntity<>(singletonMap("status", "No such project with id " + id), NOT_FOUND);
         }
 
-        Project project = value.get();
-        project.setDeleted(true);
-        projectsService.add(project);
         return new ResponseEntity<>(singletonMap("status", "Deleted"), OK);
     }
 }

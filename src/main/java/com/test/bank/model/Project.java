@@ -16,9 +16,11 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @ApiModelProperty(hidden = true)
     Long id;
+    @ApiModelProperty(example = "Test project")
     String name;
+    @ApiModelProperty(example = "false")
     boolean deleted;
 }
