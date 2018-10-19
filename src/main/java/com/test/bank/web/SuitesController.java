@@ -35,7 +35,7 @@ public class SuitesController {
 
     @RequestMapping(value = "/projects/{projectId}/suites", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getSuitesByProjectId(@PathVariable Long projectId, Boolean deleted) {
-        return new ResponseEntity<>(Collections.singletonMap("suites", suitesService.findActiveSuitesByProjectId(projectId, deleted)), HttpStatus.OK);
+        return new ResponseEntity<>(suitesService.findActiveSuitesByProjectId(projectId, deleted), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/projects/suites/{suiteId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
