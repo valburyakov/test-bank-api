@@ -2,6 +2,7 @@ package com.test.bank.web;
 
 import com.test.bank.model.Suite;
 import com.test.bank.service.SuitesService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,10 +16,10 @@ import static com.test.bank.ControllerKeyConstants.ID_KEY;
 import static com.test.bank.ControllerKeyConstants.STATUS_KEY;
 
 @RestController
+@AllArgsConstructor
 public class SuitesController {
 
-    @Autowired
-    private SuitesService suitesService;
+    private final SuitesService suitesService;
 
     @RequestMapping(value = "/projects/{projectId}/suites", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity createSuite(@PathVariable("projectId") Long projectId, @RequestBody Suite suite) {

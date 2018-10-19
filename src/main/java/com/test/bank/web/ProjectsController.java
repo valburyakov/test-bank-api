@@ -2,6 +2,7 @@ package com.test.bank.web;
 
 import com.test.bank.model.Project;
 import com.test.bank.service.ProjectsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +15,16 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
+@RequiredArgsConstructor
 public class ProjectsController {
 
-    @Autowired
-    private ProjectsService projectsService;
+    private final ProjectsService projectsService;
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "/projects", method = RequestMethod.POST)
     public Map<String, Long> createProject(@RequestBody Project project) {
-        return singletonMap("id", projectsService.add(project));
+        return singletonMap("id", projectsService.addProject(project));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
     public Iterable<Project> getAllProjects() {
         return projectsService.getAllProjects();
@@ -33,8 +32,8 @@ public class ProjectsController {
 
     @RequestMapping(value = "/projects/{id}", method = RequestMethod.GET)
     public ResponseEntity getProjectById(@PathVariable Long id) {
-        Optional<Project> value = projectsService.findProjectById(id);
-        return value.<ResponseEntity>map(project -> new ResponseEntity<>(project, OK))
+        return projectsService.findProjectById(id)
+                .<ResponseEntity>map(project -> new ResponseEntity<>(project, OK))
                 .orElseGet(() -> new ResponseEntity<>(singletonMap("status", "No such project with id " + id), NOT_FOUND));
     }
 

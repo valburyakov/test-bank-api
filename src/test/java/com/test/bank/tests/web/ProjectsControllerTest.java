@@ -38,7 +38,7 @@ public class ProjectsControllerTest {
         Project project = new Project();
         project.setName("Demo");
 
-        when(service.add(project)).thenReturn(0L);
+        when(service.addProject(project)).thenReturn(0L);
 
         this.mockMvc.perform(post("/projects")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
