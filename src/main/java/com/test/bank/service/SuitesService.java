@@ -22,6 +22,9 @@ public class SuitesService {
     public Optional<Suite> findSuiteById(Long id) {
         return suitesRepository.findById(id);
     }
+    public Optional<Suite> findSuitByName(Long projectId, String name, boolean deleted) {
+        return suitesRepository.findSuitByName(projectId, name, deleted);
+    }
 
     public List<Suite> findSuitesByProjectId(Long projectId) {
         return suitesRepository.findSuitesByProjectId(projectId);

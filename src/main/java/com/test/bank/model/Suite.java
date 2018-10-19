@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -21,11 +19,9 @@ public class Suite {
     Long id;
     @ApiModelProperty(hidden = true)
     Long projectId;
-    @NotNull
-    @Size(max = 20)
-    @Column(unique=true, nullable=false)
-    @ApiModelProperty(example = "Test suite")
+    @ApiModelProperty(example = "Demo test suite")
+    @Column(unique = true)
     String name;
-    @ApiModelProperty(example = "false")
+    @ApiModelProperty(hidden = true)
     boolean deleted;
 }
