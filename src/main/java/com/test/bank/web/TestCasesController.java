@@ -51,7 +51,7 @@ public class TestCasesController {
             return suiteHaveWrongProjectIdResponse(suiteId);
         }
 
-        return new ResponseEntity<>(Collections.singletonMap(CASES_KEY, testCasesService.findActiveTestCasesBySuiteId(suiteId, deleted)), HttpStatus.OK);
+        return new ResponseEntity<>(testCasesService.findActiveTestCasesBySuiteId(suiteId, deleted), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/projects/{projectId}/cases/labels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -63,10 +63,10 @@ public class TestCasesController {
         return new ResponseEntity<>(Collections.singletonMap(CASES_KEY, testCasesService.findByLabel(labels)), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/projects/{projectId}/cases/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity getTestCasesByProjectIdAndCaseId(@PathVariable Long projectId, @PathVariable Long id) {
-        if (!isProjectPresent(projectId)) {
-            return projectIdNotFoundResponse(projectId);
+    @RequestMapping(value = "/suites/{suiteId}/cases/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity getTestCasesByProjectIdAndCaseId(@PathVariable Long suiteId, @PathVariable Long id) {
+        if (!isSuitePresent(suiteId)) {
+            return suiteIdNotFoundResponse(suiteId);
         }
 
         Optional<TestCase> testCase = testCasesService.findTestCaseById(id);
@@ -74,7 +74,7 @@ public class TestCasesController {
             return testCaseNotFoundResponse(id);
         }
 
-        return new ResponseEntity<>(Collections.singletonMap(CASE_KEY, testCasesService.findTestCaseById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(testCasesService.findTestCaseById(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/projects/{projectId}/suites/{suiteId}/cases", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -119,6 +119,10 @@ public class TestCasesController {
 
         testCasesService.updateTestCase(test);
         return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, DELETED_STATUS), HttpStatus.OK);
+    }
+
+    private boolean isSuitePresent(Long suiteId) {
+        return suitesService.findSuiteById(suiteId).isPresent();
     }
 
 
