@@ -2,17 +2,19 @@ package com.test.bank.service;
 
 import com.test.bank.model.Suite;
 import com.test.bank.repository.SuitesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class SuitesService {
 
-    @Autowired
-    private SuitesRepository suitesRepository;
+    private final SuitesRepository suitesRepository;
 
     public Long add(Long projectId, Suite suite) {
         suite.setProjectId(projectId);
@@ -34,11 +36,16 @@ public class SuitesService {
         return suitesRepository.findActiveSuitesByProjectId(projectId, deleted);
     }
 
-    public void deleteSuite(Suite suite) {
-        suitesRepository.delete(suite);
+    public boolean deleteSuite(Long id) {
+        Optional<Suite> value = findSuiteById(id);
+        if (!value.isPresent()) {
+            return false;
+        }
+
+        Suite suite = value.get();
+        suite.setDeleted(true);
+        suitesRepository.save(suite);
+        return true;
     }
 
-    public void updateSuite(Suite suite) {
-        suitesRepository.save(suite);
-    }
 }

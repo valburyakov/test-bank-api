@@ -56,7 +56,7 @@ public class LaunchesControllerTest {
         Launch launch = new Launch();
         launch.setResult(LaunchStatus.NOT_RUN.name());
 
-        when(launchesService.add(launch)).thenReturn(1L);
+        when(launchesService.add(project.getId(), launch)).thenReturn(1L);
 
         this.mockMvc.perform(post("/projects/{projectId}/launches", project.getId())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -77,7 +77,7 @@ public class LaunchesControllerTest {
         this.mockMvc.perform(get("/projects/{projectId}/launches", project.getId())
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"launches\":[{\"id\":1,\"projectId\":1,\"testCaseId\":null,\"result\":\"NOT_RUN\",\"description\":\"\",\"executionDate\":null}]}"));
+                .andExpect(content().json("[{\"id\":1,\"projectId\":1,\"testCaseId\":null,\"result\":\"NOT_RUN\",\"description\":\"\",\"executionDate\":null}]"));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class LaunchesControllerTest {
         this.mockMvc.perform(get("/projects/launches/cases/{caseId}", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"launches\":[{\"id\":1,\"projectId\":1,\"testCaseId\":1,\"result\":\"NOT_RUN\",\"description\":\"\",\"executionDate\":null}]}"));
+                .andExpect(content().json("[{\"id\":1,\"projectId\":1,\"testCaseId\":1,\"result\":\"NOT_RUN\",\"description\":\"\",\"executionDate\":null}]"));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class LaunchesControllerTest {
         this.mockMvc.perform(get("/projects/launches/{launchId}", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"launch\":{\"id\":1,\"projectId\":1,\"testCaseId\":1,\"result\":\"NOT_RUN\",\"description\":\"\",\"executionDate\":null}}"));
+                .andExpect(content().json("{\"id\":1,\"projectId\":1,\"testCaseId\":1,\"result\":\"NOT_RUN\",\"description\":\"\",\"executionDate\":null}"));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class LaunchesControllerTest {
         launch.setTestCaseId(1L);
         launch.setResult(LaunchStatus.NOT_RUN.name());
 
-        when(launchesService.findLaunchById(1L)).thenReturn(Optional.of(launch));
+        when(launchesService.deleteById(1L)).thenReturn(true);
 
         this.mockMvc.perform(delete("/projects/launches/{launchId}", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))

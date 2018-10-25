@@ -7,7 +7,8 @@ import com.test.bank.enums.LaunchStatus;
 import com.test.bank.model.Launch;
 import com.test.bank.service.LaunchesService;
 import com.test.bank.service.ProjectsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.test.bank.service.TestCasesService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,27 +20,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.test.bank.ControllerKeyConstants.STATUS_KEY;
 import static java.util.Collections.singletonMap;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
+@RequiredArgsConstructor
 public class LaunchesController {
 
-    private static final String LAUNCHES_KEY = "launches";
-    private static final String LAUNCH_KEY = "launch";
-
-    @Autowired
-    private LaunchesService launchesService;
-
-    @Autowired
-    private ProjectsService projectsService;
+    private final LaunchesService launchesService;
+    private final ProjectsService projectsService;
 
     @RequestMapping(value = "/projects/{projectId}/launches", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getLaunchesByProjectId(@PathVariable Long projectId) {
-        if (!isProjectPresent(projectId)) {
-            return projectIdNotFoundResponse(projectId);
-        }
-
-        return new ResponseEntity<>(singletonMap(LAUNCHES_KEY, launchesService.findAllLaunchesByProjectId(projectId)), HttpStatus.OK);
+        return projectsService.findProjectById(projectId)
+                .<ResponseEntity>map(project -> new ResponseEntity<>(launchesService.findAllLaunchesByProjectId(projectId), OK))
+                .orElseGet(() -> new ResponseEntity<>(Collections.singletonMap(
+                        STATUS_KEY, "No such project with id " + projectId), HttpStatus.NOT_FOUND));
     }
 
     @RequestMapping(value = "/projects/{projectId}/launches", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -87,25 +84,22 @@ public class LaunchesController {
 
     @RequestMapping(value = "/projects/launches/cases/{caseId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getAllLaunchesByTestCaseId(@PathVariable Long caseId) {
-        return new ResponseEntity<>(singletonMap(LAUNCHES_KEY, launchesService.findAllLaunchesByTestCaseId(caseId)), HttpStatus.OK);
+        return new ResponseEntity<>(launchesService.findAllLaunchesByTestCaseId(caseId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/projects/launches/{launchId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getLaunchesById(@PathVariable Long launchId) {
-        if (!isLaunchPresent(launchId)) {
-            return launchNotFoundResponse(launchId);
-        }
-
-        return new ResponseEntity<>(singletonMap(LAUNCH_KEY, launchesService.findLaunchById(launchId)), HttpStatus.OK);
+        return launchesService.findLaunchById(launchId)
+                .<ResponseEntity>map(launch -> new ResponseEntity<>(launch, OK))
+                .orElseGet(() -> launchNotFoundResponse(launchId));
     }
 
     @RequestMapping(value = "/projects/launches/{launchId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity deleteLaunchById(@PathVariable Long launchId) {
-        if (!isLaunchPresent(launchId)) {
+        boolean deleted = launchesService.deleteById(launchId);
+        if (!deleted) {
             return launchNotFoundResponse(launchId);
         }
-
-        launchesService.deleteById(launchId);
         return new ResponseEntity<>(singletonMap(ControllerKeyConstants.STATUS_KEY, ControllerKeyConstants.DELETED_STATUS), HttpStatus.OK);
     }
 
@@ -114,9 +108,6 @@ public class LaunchesController {
         return projectsService.findProjectById(projectId).isPresent();
     }
 
-    private boolean isLaunchPresent(Long launchId) {
-        return launchesService.findLaunchById(launchId).isPresent();
-    }
 
     private boolean isResultCorrect(String status) {
         return Enums.getIfPresent(LaunchStatus.class, status).isPresent();
@@ -136,7 +127,5 @@ public class LaunchesController {
                         result, Stream.of(LaunchStatus.values())
                                 .map(Enum::name)
                                 .collect(Collectors.joining(", ")))), HttpStatus.BAD_REQUEST);
-
-
     }
 }

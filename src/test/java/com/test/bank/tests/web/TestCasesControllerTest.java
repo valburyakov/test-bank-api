@@ -71,37 +71,11 @@ public class TestCasesControllerTest {
         testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
         when(testCasesService.add(1L, testCase)).thenReturn(0L);
 
-        this.mockMvc.perform(post("/projects/{projectId}/suites/{suiteId}/cases", 1, 1)
+        this.mockMvc.perform(post("/suites/{suiteId}/cases",  suite.getId())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(IntegrationTestUtils.toJson(testCase)))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json("{\"id\":0}"));
-    }
-
-    @Test
-    public void testCanNotCreateTestCaseWithWrongProjectId() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        project.setName("Demo");
-        when(projectsService.findProjectById(1L)).thenReturn(Optional.of(project));
-
-        Suite suite = new Suite();
-        suite.setId(1L);
-        suite.setProjectId(2L);
-        suite.setName("Test suite");
-        when(suitesService.findSuiteById(1L)).thenReturn(Optional.of(suite));
-
-        TestCase testCase = new TestCase();
-        testCase.setId(0L);
-        testCase.setName("Test case");
-        testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
-        when(testCasesService.add(1L, testCase)).thenReturn(0L);
-
-        this.mockMvc.perform(post("/projects/{projectId}/suites/{suiteId}/cases", 1, 1)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(IntegrationTestUtils.toJson(testCase)))
-                .andDo(print()).andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"status\":\"Project does not have suite with id:  1\"}"));
     }
 
     @Test
@@ -112,7 +86,7 @@ public class TestCasesControllerTest {
         testCase.setStatus("Status");
         when(testCasesService.add(1L, testCase)).thenReturn(0L);
 
-        this.mockMvc.perform(post("/projects/{projectId}/suites/{suiteId}/cases", 1, 1)
+        this.mockMvc.perform(post("/suites/{suiteId}/cases", suite.getId())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(IntegrationTestUtils.toJson(testCase)))
                 .andDo(print()).andExpect(status().isBadRequest())
@@ -127,10 +101,10 @@ public class TestCasesControllerTest {
         testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
         when(testCasesService.findTestCaseById(1L)).thenReturn(Optional.of(testCase));
 
-        this.mockMvc.perform(get("/projects/{projectId}/cases/{caseId}", 1, 1)
+        this.mockMvc.perform(get("/suites/cases/{caseId}", suite.getId(), 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"case\":{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[],\"status\":\"NOT_TESTED\",\"deleted\":false}}"));
+                .andExpect(content().json("{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[],\"status\":\"NOT_TESTED\",\"deleted\":false}"));
     }
 
     @Test
@@ -142,12 +116,12 @@ public class TestCasesControllerTest {
         when(testCasesService.findActiveTestCasesBySuiteId(1L, false))
                 .thenReturn(Collections.singletonList(testCase));
 
-        this.mockMvc.perform(get("/projects/{projectId}/suites/{suiteId}/cases", 1, 1)
+        this.mockMvc.perform(get("/suites/{suiteId}/cases", 1)
                 .param("deleted", "false")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json(
-                        "{\"cases\":[{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[],\"status\":\"NOT_TESTED\",\"deleted\":false}]}"));
+                        "[{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[],\"status\":\"NOT_TESTED\",\"deleted\":false}]"));
     }
 
     @Test
@@ -157,30 +131,14 @@ public class TestCasesControllerTest {
         testCase.setName("Test case");
         testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
         when(testCasesService.findTestCaseById(1L)).thenReturn(Optional.of(testCase));
+        when(testCasesService.deleteTestCase(1L)).thenReturn(true);
 
 
-        this.mockMvc.perform(delete("/projects/{projectId}/cases/{id}", 1, 1, 1)
+        this.mockMvc.perform(delete("/suites/cases/{id}", suite.getId(), 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json(
                         "{\"status\":\"Deleted\"}"));
-    }
-
-    @Test
-    public void testCanNotFoundProjectId() throws Exception {
-        TestCase testCase = new TestCase();
-        testCase.setId(1L);
-        testCase.setName("Test case");
-        testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
-        when(testCasesService.findActiveTestCasesBySuiteId(1L, false))
-                .thenReturn(Collections.singletonList(testCase));
-
-
-        this.mockMvc.perform(get("/projects/{projectId}/suites/{suiteId}/cases", 2, 1)
-                .param("deleted", "false")
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print()).andExpect(status().isNotFound())
-                .andExpect(content().json("{\"status\":\"No such project with id 2\"}"));
     }
 
     @Test
@@ -193,7 +151,7 @@ public class TestCasesControllerTest {
                 .thenReturn(Collections.singletonList(testCase));
 
 
-        this.mockMvc.perform(get("/projects/{projectId}/suites/{suiteId}/cases", 1, 2)
+        this.mockMvc.perform(get("/suites/{suiteId}/cases",  2)
                 .param("deleted", "false")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isNotFound())
@@ -201,14 +159,14 @@ public class TestCasesControllerTest {
     }
 
     @Test
-    public void testCanNotFoundTestCaeId() throws Exception {
+    public void testCanNotFoundTestCaseId() throws Exception {
         TestCase testCase = new TestCase();
         testCase.setId(1L);
         testCase.setName("Test case");
         testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
         when(testCasesService.findTestCaseById(1L)).thenReturn(Optional.of(testCase));
 
-        this.mockMvc.perform(get("/projects/{projectId}/cases/{id}", 1, 2)
+        this.mockMvc.perform(get("/suites/cases/{id}",2)
                 .param("deleted", "false")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isNotFound())
@@ -230,6 +188,23 @@ public class TestCasesControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json(
-                        "{\"cases\":[{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[\"smoke\",\"api\"],\"status\":\"NOT_TESTED\",\"deleted\":false}]}"));
+                        "[{\"id\":1,\"suiteId\":null,\"name\":\"Test case\",\"description\":null,\"steps\":[],\"labels\":[\"smoke\",\"api\"],\"status\":\"NOT_TESTED\",\"deleted\":false}]"));
+    }
+
+    @Test
+    public void testCanNotCreateTestCaseWithWrongProjectId() throws Exception {
+        List<String> labels = Arrays.asList("smoke", "api");
+        TestCase testCase = new TestCase();
+        testCase.setId(1L);
+        testCase.setName("Test case");
+        testCase.setStatus(TestCaseStatus.NOT_TESTED.name());
+        testCase.setLabels(labels);
+
+        this.mockMvc.perform(get("/projects/{projectId}/cases/labels", 2)
+                .param("label", "smoke", "api")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print()).andExpect(status().isNotFound())
+                .andExpect(content().json(
+                        "{\"status\":\"No such project with id 2\"}"));
     }
 }

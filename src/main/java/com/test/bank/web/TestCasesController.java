@@ -2,12 +2,11 @@ package com.test.bank.web;
 
 import com.google.common.base.Enums;
 import com.test.bank.enums.TestCaseStatus;
-import com.test.bank.model.Suite;
 import com.test.bank.model.TestCase;
 import com.test.bank.service.ProjectsService;
 import com.test.bank.service.SuitesService;
 import com.test.bank.service.TestCasesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,80 +14,49 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
+@RequiredArgsConstructor
 public class TestCasesController {
 
     private static final String STATUS_KEY = "status";
     private static final String ID_KEY = "id";
-    private static final String CASE_KEY = "case";
-    private static final String CASES_KEY = "cases";
     private static final String DELETED_STATUS = "Deleted";
 
-    @Autowired
-    private TestCasesService testCasesService;
-
-    @Autowired
-    private ProjectsService projectsService;
-
-    @Autowired
-    private SuitesService suitesService;
+    private final TestCasesService testCasesService;
+    private final ProjectsService projectsService;
+    private final SuitesService suitesService;
 
 
-    @RequestMapping(value = "/projects/{projectId}/suites/{suiteId}/cases", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity getTestCasesBySuiteId(@PathVariable Long projectId, @PathVariable Long suiteId, Boolean deleted) {
-        if (!isProjectPresent(projectId)) {
-            return projectIdNotFoundResponse(projectId);
-        }
-        Optional<Suite> value = suitesService.findSuiteById(suiteId);
-        if (!value.isPresent()) {
-            return suiteIdNotFoundResponse(suiteId);
-        }
-        if (projectId.longValue() != value.get().getProjectId().longValue()) {
-            return suiteHaveWrongProjectIdResponse(suiteId);
-        }
-
-        return new ResponseEntity<>(testCasesService.findActiveTestCasesBySuiteId(suiteId, deleted), HttpStatus.OK);
+    @RequestMapping(value = "/suites/{suiteId}/cases", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity getTestCasesBySuiteId(@PathVariable Long suiteId, Boolean deleted) {
+        return suitesService.findSuiteById(suiteId)
+                .<ResponseEntity>map(suite -> new ResponseEntity<>(testCasesService.findActiveTestCasesBySuiteId(suiteId, deleted), OK))
+                .orElseGet(() -> suiteIdNotFoundResponse(suiteId));
     }
 
     @RequestMapping(value = "/projects/{projectId}/cases/labels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity getTestCasesByLabels(@PathVariable Long projectId, @RequestParam("label") List<String> labels) {
-        if (!isProjectPresent(projectId)) {
-            return projectIdNotFoundResponse(projectId);
-        }
-
-        return new ResponseEntity<>(Collections.singletonMap(CASES_KEY, testCasesService.findByLabel(labels)), HttpStatus.OK);
+        return projectsService.findProjectById(projectId)
+                .<ResponseEntity>map(project -> new ResponseEntity<>(testCasesService.findByLabel(labels), OK))
+                .orElseGet(() -> projectIdNotFoundResponse(projectId));
     }
 
-    @RequestMapping(value = "/suites/{suiteId}/cases/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity getTestCasesByProjectIdAndCaseId(@PathVariable Long suiteId, @PathVariable Long id) {
+    @RequestMapping(value = "/suites/cases/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity getTestCasesById(@PathVariable Long id) {
+        return testCasesService.findTestCaseById(id)
+                .<ResponseEntity>map(testCase -> new ResponseEntity<>(testCase, OK))
+                .orElseGet(() -> testCaseNotFoundResponse(id));
+    }
+
+    @RequestMapping(value = "/suites/{suiteId}/cases", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity createTestCase(@PathVariable Long suiteId, @RequestBody TestCase testCase) {
         if (!isSuitePresent(suiteId)) {
             return suiteIdNotFoundResponse(suiteId);
-        }
-
-        Optional<TestCase> testCase = testCasesService.findTestCaseById(id);
-        if (!testCase.isPresent()) {
-            return testCaseNotFoundResponse(id);
-        }
-
-        return new ResponseEntity<>(testCasesService.findTestCaseById(id), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/projects/{projectId}/suites/{suiteId}/cases", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity createTestCase(@PathVariable Long projectId, @PathVariable Long suiteId, @RequestBody TestCase testCase) {
-        if (!isProjectPresent(projectId)) {
-            return projectIdNotFoundResponse(projectId);
-        }
-        Optional<Suite> value = suitesService.findSuiteById(suiteId);
-        if (!value.isPresent()) {
-            return suiteIdNotFoundResponse(suiteId);
-        }
-
-        if (projectId.longValue() != value.get().getProjectId().longValue()) {
-            return suiteHaveWrongProjectIdResponse(suiteId);
         }
 
         if (!isStatusCorrect(testCase.getStatus())) {
@@ -99,41 +67,27 @@ public class TestCasesController {
                                     .collect(Collectors.joining(", ")))), HttpStatus.BAD_REQUEST);
         }
 
-
         return new ResponseEntity<>(Collections.singletonMap(ID_KEY, testCasesService.add(suiteId, testCase)), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/projects/{projectId}/cases/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity deleteTestCaseById(@PathVariable Long projectId, @PathVariable Long id) {
-        if (!isProjectPresent(projectId)) {
-            return projectIdNotFoundResponse(projectId);
-        }
-
-        Optional<TestCase> value = testCasesService.findTestCaseById(id);
-        if (!value.isPresent()) {
+    @RequestMapping(value = "/suites/cases/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity deleteTestCaseById(@PathVariable Long id) {
+        boolean deleted = testCasesService.deleteTestCase(id);
+        if (!deleted) {
             return testCaseNotFoundResponse(id);
         }
 
-        TestCase test = value.get();
-        test.setDeleted(true);
-
-        testCasesService.updateTestCase(test);
         return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, DELETED_STATUS), HttpStatus.OK);
     }
+
 
     private boolean isSuitePresent(Long suiteId) {
         return suitesService.findSuiteById(suiteId).isPresent();
     }
 
-
-    private boolean isProjectPresent(Long projectId) {
-        return projectsService.findProjectById(projectId).isPresent();
-    }
-
     private boolean isStatusCorrect(String status) {
         return Enums.getIfPresent(TestCaseStatus.class, status).isPresent();
     }
-
 
     private ResponseEntity projectIdNotFoundResponse(Long projectId) {
         return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "No such project with id " + projectId), HttpStatus.NOT_FOUND);
@@ -143,13 +97,8 @@ public class TestCasesController {
         return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "No such suite with id " + suiteId), HttpStatus.NOT_FOUND);
     }
 
-    private ResponseEntity testCaseNotFoundResponse(Long suiteId) {
-        return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "No such test case with id " + suiteId), HttpStatus.NOT_FOUND);
+    private ResponseEntity testCaseNotFoundResponse(Long testCaseId) {
+        return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "No such test case with id " + testCaseId), HttpStatus.NOT_FOUND);
     }
-
-    private ResponseEntity suiteHaveWrongProjectIdResponse(Long suiteId) {
-        return new ResponseEntity<>(Collections.singletonMap(STATUS_KEY, "Project does not have suite with id:  " + suiteId), HttpStatus.BAD_REQUEST);
-    }
-
 }
 

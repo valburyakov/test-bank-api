@@ -30,4 +30,6 @@ public class Launch {
     @ApiModelProperty(hidden = true)
     @CreationTimestamp
     Date executionDate;
+    @ApiModelProperty(example = "false")
+    boolean deleted;
 }

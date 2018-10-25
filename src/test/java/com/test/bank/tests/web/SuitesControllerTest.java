@@ -77,6 +77,20 @@ public class SuitesControllerTest {
     }
 
     @Test
+    public void testCanNotGetSuiteForNonExistingProject() throws Exception {
+        Suite suite = new Suite();
+        suite.setProjectId(1L);
+        suite.setName("Test suite");
+
+        this.mockMvc.perform(get("/projects/{projectId}/suites", 2)
+                .param("deleted", "false")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(IntegrationTestUtils.toJson(suite)))
+                .andDo(print()).andExpect(status().isNotFound())
+                .andExpect(content().json("{\"status\":\"No such project with id 2\"}"));
+    }
+
+    @Test
     public void testCanGetSuiteById() throws Exception {
         Suite suite = new Suite();
         suite.setId(1L);
@@ -103,7 +117,7 @@ public class SuitesControllerTest {
                 .param("deleted", "false")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().json("{\"suites\":[{\"id\":1,\"projectId\":1,\"name\":\"Test suite\",\"deleted\":false}]}"));
+                .andExpect(content().json("[{\"id\":1,\"projectId\":1,\"name\":\"Test suite\",\"deleted\":false}]"));
     }
 
     @Test
@@ -112,8 +126,7 @@ public class SuitesControllerTest {
         suite.setId(1L);
         suite.setProjectId(1L);
         suite.setName("Test suite");
-        when(suitesService.findSuiteById(1L))
-                .thenReturn(Optional.of(suite));
+        when(suitesService.deleteSuite(1L)).thenReturn(true);
 
         this.mockMvc.perform(delete("/projects/suites/{suiteId}", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
