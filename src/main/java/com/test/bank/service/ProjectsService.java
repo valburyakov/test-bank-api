@@ -1,5 +1,7 @@
 package com.test.bank.service;
 
+import com.test.bank.dto.ProjectDTO;
+import com.test.bank.mapper.impl.ProjectMapperImpl;
 import com.test.bank.model.Project;
 import com.test.bank.repository.ProjectsRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,10 @@ import java.util.Optional;
 public class ProjectsService {
 
     private final ProjectsRepository projectsRepository;
+    private final ProjectMapperImpl projectMapper;
 
-    public Long addProject(Project project) {
+    public Long addProject(ProjectDTO projectDTO) {
+        Project project = projectMapper.toProject(projectDTO);
         return projectsRepository.save(project).getId();
     }
 
@@ -27,16 +31,7 @@ public class ProjectsService {
         return projectsRepository.findById(id);
     }
 
-    public boolean deleteProject(Long id) {
-        Optional<Project> value = findProjectById(id);
-        if (!value.isPresent()) {
-            return false;
-        }
-
-        Project project = value.get();
-        project.setDeleted(true);
-        addProject(project);
-
-        return true;
+    public Optional<Project> getProjectByName(String name) {
+        return projectsRepository.findByName(name);
     }
 }

@@ -62,6 +62,20 @@ public class ProjectsControllerTest {
     }
 
     @Test
+    public void testCanGetProjectByName() throws Exception {
+        Project project = new Project();
+        project.setId(1L);
+        project.setName("Demo");
+
+        when(service.getProjectByName("Demo")).thenReturn(Optional.of(project));
+
+        this.mockMvc.perform(get("/project?name=Demo", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":1,\"name\":\"Demo\"}"));
+    }
+
+    @Test
     public void testCanGetAllProjects() throws Exception {
         Project project = new Project();
         project.setId(1L);
