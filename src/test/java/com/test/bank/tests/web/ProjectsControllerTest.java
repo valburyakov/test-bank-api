@@ -1,5 +1,6 @@
 package com.test.bank.tests.web;
 
+import com.test.bank.dto.ProjectDTO;
 import com.test.bank.model.Project;
 import com.test.bank.service.ProjectsService;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class ProjectsControllerTest {
 
     @Test
     public void testCanCreateProject() throws Exception {
-        Project project = new Project();
+        ProjectDTO project = new ProjectDTO();
         project.setName("Demo");
 
         when(service.addProject(project)).thenReturn(0L);
