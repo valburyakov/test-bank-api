@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  docker-mysql:
+  mysql:
     image: mysql:5.6
     container_name: mysql
     ports:
@@ -11,11 +11,11 @@ services:
     environment:
     - MYSQL_ROOT_PASSWORD=admin
     - MYSQL_DATABASE=test_bank
-  spring-boot-jpa-docker-webapp:
+  test_bank_api:
     image: test-bank-api:0.1.0
     container_name: test-bank-api
     depends_on:
-    - docker-mysql
+    - mysql
     ports:
     - 8080:8080
     expose:
@@ -27,4 +27,4 @@ services:
     - MYSQL_ROOT_PASSWORD=admin
     - DATABASE_PORT=3306
     links:
-    - docker-mysql
+    - mysql

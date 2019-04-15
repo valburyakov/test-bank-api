@@ -1,10 +1,13 @@
 package com.test.bank.web;
 
 import com.test.bank.model.Project;
+import com.test.bank.dto.ProjectDTO;
 import com.test.bank.service.ProjectsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -20,11 +23,7 @@ public class ProjectsController {
     private final ProjectsService projectsService;
 
     @RequestMapping(value = "/projects", method = RequestMethod.POST)
-    public ResponseEntity createProject(@RequestBody Project project) {
-        if (project.getName() == null || project.getName().isEmpty()) {
-            return new ResponseEntity<>(singletonMap(STATUS_KEY, "Wrong project name"), BAD_REQUEST);
-        }
-
+    public ResponseEntity createProject(@Valid @RequestBody ProjectDTO project) {
         return new ResponseEntity<>(singletonMap(ID_KEY, projectsService.addProject(project)), OK);
     }
 
@@ -40,14 +39,11 @@ public class ProjectsController {
                 .orElseGet(() -> new ResponseEntity<>(singletonMap(STATUS_KEY, "No such project with id " + id), NOT_FOUND));
     }
 
-    @RequestMapping(value = "/projects/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteProjectById(@PathVariable Long id) {
-        boolean deleted = projectsService.deleteProject(id);
-        if (!deleted) {
-            return new ResponseEntity<>(singletonMap(STATUS_KEY, "No such project with id " + id), NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(singletonMap(STATUS_KEY, "Deleted"), OK);
+    @RequestMapping(value = "/project", method = RequestMethod.GET)
+    public ResponseEntity getProjectByName(@RequestParam  String name){
+        return projectsService.getProjectByName(name)
+                .<ResponseEntity>map(project -> new ResponseEntity<>(project, OK))
+                .orElseGet(() -> new ResponseEntity<>(singletonMap(STATUS_KEY, "No such project with id or name " + name), NOT_FOUND));
     }
 }
 
