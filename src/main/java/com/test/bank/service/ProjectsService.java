@@ -1,7 +1,7 @@
 package com.test.bank.service;
 
 import com.test.bank.dto.ProjectDTO;
-import com.test.bank.mapper.impl.ProjectMapperImpl;
+import com.test.bank.mapper.ProjectMapper;
 import com.test.bank.model.Project;
 import com.test.bank.repository.ProjectsRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class ProjectsService {
 
     private final ProjectsRepository projectsRepository;
-    private final ProjectMapperImpl projectMapper;
+    private final ProjectMapper projectMapper;
 
     public Long addProject(ProjectDTO projectDTO) {
         Project project = projectMapper.toProject(projectDTO);
