@@ -15,13 +15,17 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Diff {
 
-    public Diff(String diffLine) {
-        this.diffLine = diffLine;
+    public Diff(String original, String revised, String unifiedDiff) {
+        this.original = original;
+        this.revised = revised;
+        this.unifiedDiff = unifiedDiff;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String diffLine;
+    private String original;
+    private String revised;
+    private String unifiedDiff;
 }
