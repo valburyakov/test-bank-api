@@ -1,12 +1,15 @@
 package com.test.bank.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.difflib.text.DiffRow;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,4 +30,7 @@ public class TestCase {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "episodeId")
     private Project project;
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Diff diff;
 }

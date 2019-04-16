@@ -47,4 +47,7 @@ dependencies {
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+
+
+    compile group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.0'
 }

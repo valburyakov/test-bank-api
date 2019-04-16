@@ -27,4 +27,9 @@ public class TestCaseController {
     public List<TestCase> getAllTestCases(@PathVariable Long id){
         return testCaseService.getAllTestCases(id);
     }
+
+    @PutMapping("/case/{id}")
+    public TestCase updateTestCase(@PathVariable Long id, @RequestBody TestCaseDTO testCaseDTO){
+        return testCaseService.updateTestCase(id, testCaseDTO);
+    }
 }
