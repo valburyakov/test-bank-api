@@ -34,4 +34,10 @@ public class ProjectsService {
     public Optional<Project> getProjectByName(String name) {
         return projectsRepository.findByName(name);
     }
+
+    public boolean deleteProject(Long id) {
+        Project project = projectsRepository.findById(id).get();
+        projectsRepository.delete(project);
+        return true;
+    }
 }
