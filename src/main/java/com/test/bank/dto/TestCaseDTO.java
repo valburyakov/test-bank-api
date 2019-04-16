@@ -20,4 +20,7 @@ public class TestCaseDTO {
 
     @ApiModelProperty(example = "PASSED")
     private String status;
+
+    @ApiModelProperty(example = "spirogov@gmail.com")
+    private String changedBy;
 }

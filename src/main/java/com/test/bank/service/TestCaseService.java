@@ -47,14 +47,11 @@ public class TestCaseService {
 
         Diff diff = DiffExtractor.of(oldTestCase, newTestCase);
 
-        oldTestCase.setTitle(newTestCaseDTO.getTitle());
-        oldTestCase.setReference(newTestCaseDTO.getReference());
-        oldTestCase.setStatus(newTestCase.getStatus());
-        oldTestCase.setLabels(newTestCase.getLabels());
+        newTestCase.setId(oldTestCase.getId());
 
-        oldTestCase.setDiff(diff);
+        newTestCase.setDiff(diff);
 
-        return testCaseRepository.save(oldTestCase);
+        return testCaseRepository.save(newTestCase);
     }
 
     public Optional<TestCase> getTestCaseById(Long id) {

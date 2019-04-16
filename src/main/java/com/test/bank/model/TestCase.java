@@ -23,6 +23,7 @@ public class TestCase {
     private String reference;
     private String labels;
     private String status;
+    private String changedBy;
 
     private Date createdAt = new Date();
 
