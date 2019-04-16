@@ -6,9 +6,9 @@ spring:
 spring:
   profiles: dev
   datasource:
-    username: root
-    password: admin
-    url: jdbc:mysql://localhost:3306/test_bank
+    username: ${DATABASE_USER}
+    password: ${MYSQL_ROOT_PASSWORD}
+    url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
   jpa:
     hibernate:
       ddl-auto: update
