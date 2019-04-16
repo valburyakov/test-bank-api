@@ -5,7 +5,9 @@ import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
+import com.test.bank.dto.TestCaseDTO;
 import com.test.bank.model.Diff;
+import com.test.bank.model.TestCase;
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -33,18 +35,32 @@ public class DiffExtractor {
         return generateDiff(singletonList(original), singletonList(revisited)).get(0).getOldLine();
     }
 
-    public static Diff of(String original, String revised) {
-        try {
-            List<String> originalData = asList(original);
+    public static Diff of(TestCase originalCase, TestCase revisedCase) {
+        List<String> original = asList(originalCase.getTitle(), originalCase.getReference());
 
-            Patch<String> patch = DiffUtils.diff(originalData, asList(revised));
-            List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff("old", "new", originalData, patch, 20);
+        List<String> revised = asList(revisedCase.getTitle(), revisedCase.getReference());
+
+        return of(original, revised);
+    }
+
+
+    public static Diff of(List<String> original, List<String> revised) {
+        try {
+            Patch<String> patch = DiffUtils.diff(original, revised);
+            List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff("old", "new", original, patch, 20);
             return new Diff(String.join(",", original),
                     String.join(",", revised),
                     String.join(",", unifiedDiff));
         } catch (Exception exception) {
             return empty();
         }
+    }
+
+    public static Diff of(String original, String revised) {
+        List<String> originalData = asList(original);
+        List<String> revisedData = asList(revised);
+        return of(originalData, revisedData);
+
     }
 
     public static Diff empty() {

@@ -26,7 +26,7 @@ public class TestCaseService {
     public TestCase addTestCase(Long id, TestCaseDTO testCaseDTO) {
         Project project = projectsService.findProjectById(id).get();
         TestCase testCase = testCaseMapper.toTestCase(testCaseDTO);
-        Diff diff = DiffExtractor.of("", testCase.getTitle());
+        Diff diff = DiffExtractor.of(new TestCase(), testCase);
 
         testCase.setDiff(diff);
 
@@ -42,7 +42,9 @@ public class TestCaseService {
     public TestCase updateTestCase(Long id, TestCaseDTO newTestCaseDTO) {
         TestCase oldTestCase = testCaseRepository.findById(id).get();
 
-        Diff diff = DiffExtractor.of(oldTestCase.getTitle(), newTestCaseDTO.getTitle());
+        TestCase newTestCase = testCaseMapper.toTestCase(newTestCaseDTO);
+
+        Diff diff = DiffExtractor.of(oldTestCase, newTestCase);
 
         oldTestCase.setTitle(newTestCaseDTO.getTitle());
         oldTestCase.setReference(newTestCaseDTO.getReference());
