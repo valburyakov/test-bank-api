@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,9 +49,15 @@ public class TestCaseService {
 
         oldTestCase.setTitle(newTestCaseDTO.getTitle());
         oldTestCase.setReference(newTestCaseDTO.getReference());
+        oldTestCase.setStatus(newTestCase.getStatus());
+        oldTestCase.setLabels(newTestCase.getLabels());
 
         oldTestCase.setDiff(diff);
 
         return testCaseRepository.save(oldTestCase);
+    }
+
+    public Optional<TestCase> getTestCaseById(Long id) {
+        return testCaseRepository.findById(id);
     }
 }

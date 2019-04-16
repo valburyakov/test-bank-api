@@ -50,7 +50,7 @@ public class DiffExtractor {
             List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff("old", "new", original, patch, 20);
             return new Diff(String.join(",", original),
                     String.join(",", revised),
-                    String.join(",", unifiedDiff));
+                    String.join("\n", unifiedDiff));
         } catch (Exception exception) {
             return empty();
         }

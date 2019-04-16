@@ -1,15 +1,12 @@
 package com.test.bank.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.difflib.text.DiffRow;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +21,9 @@ public class TestCase {
     @Column(unique = true)
     private String title;
     private String reference;
+    private String labels;
+    private String status;
+
     private Date createdAt = new Date();
 
     @JsonIgnore

@@ -32,4 +32,9 @@ public class TestCaseController {
     public TestCase updateTestCase(@PathVariable Long id, @RequestBody TestCaseDTO testCaseDTO){
         return testCaseService.updateTestCase(id, testCaseDTO);
     }
+
+    @GetMapping("/case/{id}")
+    public TestCase getTestCaseById(@PathVariable Long id){
+        return testCaseService.getTestCaseById(id).get();
+    }
 }

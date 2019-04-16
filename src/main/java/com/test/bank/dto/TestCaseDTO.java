@@ -14,4 +14,10 @@ public class TestCaseDTO {
     private String title;
     @ApiModelProperty(example = "Jira-658")
     private String reference;
+
+    @ApiModelProperty(example = "Smoke")
+    private String labels;
+
+    @ApiModelProperty(example = "PASSED")
+    private String status;
 }
