@@ -18,8 +18,9 @@ public class TestCase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String title;
-
+    private String reference;
     private Date createdAt = new Date();
 
     @JsonIgnore

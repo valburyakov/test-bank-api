@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +23,15 @@ public class TestCaseService {
     private final ProjectsRepository projectsRepository;
 
 
-    public Project addTestCase(Long id, TestCaseDTO testCaseDTO) {
+    public TestCase addTestCase(Long id, TestCaseDTO testCaseDTO) {
         Project project = projectsService.findProjectById(id).get();
         TestCase testCase = testCaseMapper.toTestCase(testCaseDTO);
         project.addTestCase(testCase);
 
-        return projectsRepository.save(project);
+        return testCase;
+    }
+
+    public List<TestCase> getAllTestCases(Long id) {
+        return testCaseRepository.findAllByProjectId(id);
     }
 }

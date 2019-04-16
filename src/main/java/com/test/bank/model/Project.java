@@ -16,16 +16,17 @@ import java.util.List;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    Long id;
+    private Long id;
     @Column(unique = true)
-    String name;
-    boolean deleted;
+    private String name;
+    private boolean deleted;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "projectToCase",
             joinColumns = {@JoinColumn(name = "id")},
             inverseJoinColumns = {@JoinColumn(name = "projectId")}
     )
+    @OrderBy("id")
     private List<TestCase> testCaseList = new ArrayList<>();
 
     public void addTestCase(TestCase testCase) {
